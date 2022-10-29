@@ -10,7 +10,7 @@ export default {
         },
         {
             name: 'date',
-            type: 'string',
+            type: 'date',
             title: 'Date'
         },
         {
