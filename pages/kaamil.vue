@@ -32,16 +32,20 @@
                 v-else>
                     <em class="pi pi-check" style="color: var(--bs-white); z-index:-1;"></em>
                 </button>
-                <div class="modal fade" :id="kaamil.name.replace(/\s/g, '')" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div v-if="!kaamil.completed" class="modal fade" :id="kaamil.name.replace(/\s/g, '')" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h1 class="modal-title fs-5" id="exampleModalLabel">Mark {{kaamil.name}} as completed</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form @submit="onCompletionSubmit(kaamil._id, completionNote)">
+                            <form @submit.prevent="onCompletionSubmit(kaamil._id)">
                                 <div class="modal-body">
-                                <input type="text" class="form-control" placeholder="Enter some notes" v-model="completionNote">
+                                <span 
+                                contentEditable="true" 
+                                :id="'completionNote' + kaamil._id"
+                                style="border:none;"
+                                >Some notes</span>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -117,7 +121,8 @@ export default {
         this.openKaamils = this.kaamils.length - this.closedKaamils;
     },
     methods: {
-        async onCompletionSubmit(id,note){
+        async onCompletionSubmit(id){
+            const note = document.querySelector('#completionNote' + id).innerHTML;
             await client.patch(id).set({completed:true, completion_note:note}).commit();
         }
     }

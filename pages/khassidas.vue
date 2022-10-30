@@ -7,7 +7,10 @@
             style="width: 100vw; height: 100vh"
             >
                 <div class="container">
-                    <h1 class="text-center">Khassidas List</h1>
+                    <h1 
+                    class="text-center"
+                    style="text-decoration: underline;"
+                    >Khassidas List</h1>
                     <table class="table table-success table-striped mt-5">
                         <thead>
                             <tr>
@@ -25,7 +28,7 @@
                             <th scope="row">{{index + 1}}</th>
                             <td>{{khassida.title}}</td>
                             <td>
-                                <form @submit.prevent="submitTimesUpdate(khassida)">
+                                <form @submit="submitTimesUpdate(khassida)">
                                     <input 
                                     type="number" 
                                     v-model="khassida.currentUserTotalTimes"
@@ -41,6 +44,7 @@
             </div>
         </main>
         <Footer/>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
     </div>
 </template>
 
@@ -59,6 +63,7 @@ export default {
     async fetch(){
         const query = `
         *[_type=="khassida"]{
+            _id,
             title,
             'activities': activities[]->{
                 _id,
@@ -67,8 +72,7 @@ export default {
             } 
         }`;
         this.khassidas = await client.fetch(query);
-        this.currentUser = await client.fetch(`*[_type == "user" && _id == "e1e62da7-f6ac-4af7-a501-e04d81b2c1bb"]`);
-        console.log(this.currentUser);
+        this.currentUser = await client.fetch(`*[_type == "user" && _id == "e1e62da7-f6ac-4af7-a501-e04d81b2c1bb"]`)[0];
         for (let khassida of this.khassidas){
             khassida.totalTimes = 0;
             khassida.currentUserTotalTimes = 0;
@@ -86,18 +90,21 @@ export default {
     },
     methods: {
         async submitTimesUpdate(khassida){
-            if (khassida.lastActivity){
-                await client.patch(khassida.lastActivity).set({times: khassida.currentUserTotalTimes}).commit();
+            if (khassida.lastActivity !== null){
+                await client.patch(khassida.lastActivity).set({times: +khassida.currentUserTotalTimes}).commit();
             } else {
                 let activityResponse = await client.create({
                     _type: "khassida-activity",
                     times: +khassida.currentUserTotalTimes,
                     user: {
-                        _type: 'reference',
-                        _ref: 'e1e62da7-f6ac-4af7-a501-e04d81b2c1bb'
+                        _type: "reference",
+                        _ref: "e1e62da7-f6ac-4af7-a501-e04d81b2c1bb"
                     }
                 });
-                await client.patch(khassida._id).insert('after', 'activities[-1]', [activityResponse]).commit();
+                console.log(await client.patch(khassida._id).setIfMissing({activities: []}).insert('after', 'activities[-1]', [{
+                    _type: "reference",
+                    _ref: activityResponse._id
+                }]).commit({autoGenerateArrayKeys: true}));
             }
         }
     } 

@@ -1,5 +1,5 @@
 <template>
-    <footer class="text-muted py-5">
+    <footer class="text-muted pt-5">
   <div class="container">
     <p class="float-end mb-1">
       <a href="#"><em 
@@ -18,7 +18,7 @@
     </div>
     <p class="my-4">2022 &copy; Touba Sherbrooke All rights reserved</p>
   </div>
-</footer>
+    </footer>
 </template>
 
 <script>

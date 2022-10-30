@@ -9,8 +9,8 @@
         <h1 class="fw-light">Welcome!</h1>
         <h2 class="lead text-muted">{{country}}, {{time}}</h2>
         <p>
-          <a href="#" class="btn btn-success my-2">Kaamil <em class="pi pi-user"></em></a>
-          <a href="#" class="btn btn-success my-2">Khassidas <em class="pi pi-book"></em></a>
+          <nuxt-link to="/kaamil" class="btn btn-success my-2">Kaamil <em class="pi pi-user"></em></nuxt-link>
+          <a href="/khassidas" class="btn btn-success my-2">Khassidas <em class="pi pi-book"></em></a>
         </p>
       </div>
     </div>
