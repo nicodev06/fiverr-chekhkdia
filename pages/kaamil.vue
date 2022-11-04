@@ -39,7 +39,7 @@
                                 <h1 class="modal-title fs-5" id="exampleModalLabel">Mark {{kaamil.name}} as completed</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form @submit.prevent="onCompletionSubmit(kaamil._id)">
+                            <form @submit="onCompletionSubmit(kaamil._id)">
                                 <div class="modal-body">
                                 <span 
                                 contentEditable="true" 

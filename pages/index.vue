@@ -26,22 +26,17 @@
                 <p>Prayers Time <em class="pi pi-stopwatch"></em></p>
             </div>
             <ul class="list-group list-group-flush">
-              <div class="d-flex justify-content-between list-group-item">
+              <div 
+            v-for="(prayer,index) in prayersTime"
+            :key="index"
+            class="d-flex justify-content-between list-group-item">
                 <div>
-                  Do something
+                  {{prayer.name}}
                 </div>
                 <div>
-                  <li class="list-group-item">28-09 - 03 PM</li>
+                  <li class="list-group-item">{{prayer.time}}</li>
                 </div>
-              </div>
-              <div class="d-flex justify-content-between list-group-item">
-                <div>
-                  Do something
-                </div>
-                <div>
-                  <li class="list-group-item">28-09 - 03 PM</li>
-                </div>
-              </div>
+            </div>
             </ul>
           </div>
         </div>
@@ -86,7 +81,8 @@ export default {
     return {
       country: "",
       time: "",
-      calendarEvents: []
+      calendarEvents: null,
+      prayersTime: null
     }
   },
   compareEvents(a,b){
@@ -107,9 +103,9 @@ export default {
     this.time = geoData.time_zone.current_time.split('').splice(11,5).join('');
   },
   async fetch(){
-    const query = '*[_type == "event"]';
-    const events = await client.fetch(query);
+    const events = await client.fetch('*[_type == "event"]');
     this.calendarEvents = events.sort(this.compareEvents);
+    this.prayersTime = await client.fetch('*[_type == "prayer"]')
   },
 }
 </script>

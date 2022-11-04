@@ -9,6 +9,8 @@ import book from './book'
 import kaamil from './kaamil'
 import khassidaActivity from './khassida-activity'
 import khassida from './khassida'
+import prayer from './prayer'
+import newsletter from './newsletter'
 
 // Then we give our schema to the builder and provide the result to Sanity
 export default createSchema({
@@ -22,6 +24,8 @@ export default createSchema({
     book,
     kaamil,
     khassidaActivity,
-    khassida
+    khassida,
+    prayer,
+    newsletter
   ]),
 })

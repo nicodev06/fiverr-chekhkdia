@@ -72,7 +72,7 @@ export default {
             } 
         }`;
         this.khassidas = await client.fetch(query);
-        this.currentUser = await client.fetch(`*[_type == "user" && _id == "e1e62da7-f6ac-4af7-a501-e04d81b2c1bb"]`)[0];
+        this.currentUser = await client.fetch(`*[_type == "user" && _id == "ca672647-5e4c-41c1-b9b6-d17e0c7d6756"]`)[0];
         for (let khassida of this.khassidas){
             khassida.totalTimes = 0;
             khassida.currentUserTotalTimes = 0;
@@ -80,7 +80,7 @@ export default {
             if (khassida.activities !== null){
                 for (let activity of khassida.activities){
                 khassida.totalTimes += activity.times;
-                if (activity.user._id === "e1e62da7-f6ac-4af7-a501-e04d81b2c1bb"){ // current user id
+                if (activity.user._id === "ca672647-5e4c-41c1-b9b6-d17e0c7d6756"){ // current user id
                     khassida.currentUserTotalTimes += activity.times;
                     khassida.lastActivity = activity._id;
                 }
@@ -98,7 +98,7 @@ export default {
                     times: +khassida.currentUserTotalTimes,
                     user: {
                         _type: "reference",
-                        _ref: "e1e62da7-f6ac-4af7-a501-e04d81b2c1bb"
+                        _ref: "ca672647-5e4c-41c1-b9b6-d17e0c7d6756"
                     }
                 });
                 console.log(await client.patch(khassida._id).setIfMissing({activities: []}).insert('after', 'activities[-1]', [{
