@@ -120,6 +120,7 @@ export default {
         }).length;
         this.openKaamils = this.kaamils.length - this.closedKaamils;
     },
+    fetchOnServer: false,
     methods: {
         async onCompletionSubmit(id){
             const note = document.querySelector('#completionNote' + id).innerHTML;

@@ -107,6 +107,7 @@ export default {
     this.calendarEvents = events.sort(this.compareEvents);
     this.prayersTime = await client.fetch('*[_type == "prayer"]')
   },
+  fetchOnServer: false
 }
 </script>
 

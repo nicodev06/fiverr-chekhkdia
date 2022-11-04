@@ -88,6 +88,7 @@ export default {
         }
             }
     },
+    fetchOnServer: false,
     methods: {
         async submitTimesUpdate(khassida){
             if (khassida.lastActivity !== null){
