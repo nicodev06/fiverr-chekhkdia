@@ -8,9 +8,12 @@
             >
                 <div class="container">
                     <h1 
-                    class="text-center"
+                    class="text-center p-2"
                     style="text-decoration: underline;"
                     >Khassidas List</h1>
+                    <h3 
+                    v-show="showSubmission"
+                    class="text-center text-success">Value submitted correctly!</h3>
                     <table class="table table-success table-striped mt-5">
                         <thead>
                             <tr>
@@ -28,7 +31,7 @@
                             <th scope="row">{{index + 1}}</th>
                             <td>{{khassida.title}}</td>
                             <td>
-                                <form @submit="submitTimesUpdate(khassida)">
+                                <form @submit.prevent="submitTimesUpdate(khassida)">
                                     <input 
                                     type="number" 
                                     v-model="khassida.currentUserTotalTimes"
@@ -57,7 +60,8 @@ export default {
         return {
             khassidas: null,
             khassidasCurrentUser: null,
-            currentUser: null
+            currentUser: null,
+            showSubmission: false,
         }
     },
     async fetch(){
@@ -72,7 +76,6 @@ export default {
             } 
         }`;
         this.khassidas = await client.fetch(query);
-        this.currentUser = await client.fetch(`*[_type == "user" && _id == "ca672647-5e4c-41c1-b9b6-d17e0c7d6756"]`)[0];
         for (let khassida of this.khassidas){
             khassida.totalTimes = 0;
             khassida.currentUserTotalTimes = 0;
@@ -85,14 +88,16 @@ export default {
                     khassida.lastActivity = activity._id;
                 }
             }
+            khassida.otherUser = khassida.totalTimes - khassida.currentUserTotalTimes;
         }
             }
     },
-    fetchOnServer: false,
+    fetchOnServer: false, // doesn't hydrate the dom in this way (Only the list of khassidas)
     methods: {
         async submitTimesUpdate(khassida){
             if (khassida.lastActivity !== null){
                 await client.patch(khassida.lastActivity).set({times: +khassida.currentUserTotalTimes}).commit();
+                khassida.totalTimes = +khassida.otherUser + +khassida.currentUserTotalTimes;
             } else {
                 let activityResponse = await client.create({
                     _type: "khassida-activity",
@@ -102,11 +107,13 @@ export default {
                         _ref: "ca672647-5e4c-41c1-b9b6-d17e0c7d6756"
                     }
                 });
-                console.log(await client.patch(khassida._id).setIfMissing({activities: []}).insert('after', 'activities[-1]', [{
+                await client.patch(khassida._id).setIfMissing({activities: []}).insert('after', 'activities[-1]', [{
                     _type: "reference",
                     _ref: activityResponse._id
-                }]).commit({autoGenerateArrayKeys: true}));
+                }]).commit({autoGenerateArrayKeys: true});
+                khassida.totalTimes = khassida.currentUserTotalTimes;
             }
+            this.showSubmission = true;
         }
     } 
 }

@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Courgette&display=swap');
+
+h1 {
+  font-family: 'Courgette', cursive;
+}
+
 header {
     background-color: var(--bs-green) !important;
     color: var(--bs-white);
@@ -66,4 +72,7 @@ header {
           white-space: nowrap;
           -webkit-overflow-scrolling: touch;
         }
-  
+
+.event-time > li {
+  border: none;
+}
