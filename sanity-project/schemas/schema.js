@@ -7,7 +7,6 @@ import event from './event'
 import user from './user'
 import book from './book'
 import kaamil from './kaamil'
-import khassidaActivity from './khassida-activity'
 import khassida from './khassida'
 import prayer from './prayer'
 import newsletter from './newsletter'
@@ -23,7 +22,6 @@ export default createSchema({
     user,
     book,
     kaamil,
-    khassidaActivity,
     khassida,
     prayer,
     newsletter

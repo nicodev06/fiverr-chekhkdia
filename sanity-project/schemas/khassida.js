@@ -9,13 +9,9 @@ export default {
             type: 'string'
         },
         {
-            name: 'activities',
-            title: 'Activities',
-            type: 'array',
-            of: [{
-                type: 'reference',
-                to: [{type: 'khassida-activity'}]
-            }]
+            name: 'total',
+            title: 'Total number of Times',
+            type: 'number'
         }
     ]
 }
