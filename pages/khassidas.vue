@@ -11,9 +11,6 @@
                     class="text-center p-2"
                     style="text-decoration: underline;"
                     >Khassidas List</h1>
-                    <h3 
-                    v-show="showSubmission"
-                    class="text-center text-success">Value submitted correctly!</h3>
                     <table class="table table-success table-striped mt-5">
                         <thead>
                             <tr>
@@ -31,18 +28,28 @@
                             <th scope="row">{{index + 1}}</th>
                             <td>{{khassida.title}}</td>
                             <td>
-                                <form @submit.prevent="submitTimesUpdate(khassida)">
-                                    <input 
-                                    type="number" 
-                                    v-model="khassida.currentUserTotalTimes"
-                                    class="form-control"
-                                    style="width:25%;">
-                                </form>
+                                <input 
+                                type="number" 
+                                v-model="khassida.currentUserTotalTimes"
+                                class="form-control"
+                                style="width:25%;">    
                             </td>
-                            <td>{{khassida.totalTimes}}</td>
+                            <td>{{khassida.total}}</td>
                             </tr>
                         </tbody>
                     </table>
+                    <form @submit.prevent="submitTimesUpdate()">
+                        <button
+                        type="submit"
+                        class="btn save-changes"
+                        style="background-color: var(--bs-green); color: var(--bs-white);"
+                        >
+                        <div class="d-flex align-items-center">
+                            <p style="margin: 0;">Save changes</p>
+                            <div v-if="loading" class="lds-dual-ring mx-2"></div>
+                        </div>
+                        </button>
+                    </form>
                 </div>
             </div>
         </main>
@@ -59,9 +66,7 @@ export default {
     data(){
         return {
             khassidas: null,
-            khassidasCurrentUser: null,
-            currentUser: null,
-            showSubmission: false,
+            loadingChanges: false
         }
     },
     async fetch(){
@@ -69,52 +74,55 @@ export default {
         *[_type=="khassida"]{
             _id,
             title,
-            'activities': activities[]->{
-                _id,
-                user->{_id},
-                times
-            } 
+            total
         }`;
         this.khassidas = await client.fetch(query);
         for (let khassida of this.khassidas){
-            khassida.totalTimes = 0;
-            khassida.currentUserTotalTimes = 0;
-            khassida.lastActivity = null;
-            if (khassida.activities !== null){
-                for (let activity of khassida.activities){
-                khassida.totalTimes += activity.times;
-                if (activity.user._id === "ca672647-5e4c-41c1-b9b6-d17e0c7d6756"){ // current user id
-                    khassida.currentUserTotalTimes += activity.times;
-                    khassida.lastActivity = activity._id;
-                }
-            }
-            khassida.otherUser = khassida.totalTimes - khassida.currentUserTotalTimes;
+            khassida.currentUserTotalTimes = 0;    
         }
-            }
     },
-    fetchOnServer: false, // doesn't hydrate the dom in this way (Only the list of khassidas)
+    fetchOnServer: false, 
     methods: {
-        async submitTimesUpdate(khassida){
-            if (khassida.lastActivity !== null){
-                await client.patch(khassida.lastActivity).set({times: +khassida.currentUserTotalTimes}).commit();
-                khassida.totalTimes = +khassida.otherUser + +khassida.currentUserTotalTimes;
-            } else {
-                let activityResponse = await client.create({
-                    _type: "khassida-activity",
-                    times: +khassida.currentUserTotalTimes,
-                    user: {
-                        _type: "reference",
-                        _ref: "ca672647-5e4c-41c1-b9b6-d17e0c7d6756"
-                    }
-                });
-                await client.patch(khassida._id).setIfMissing({activities: []}).insert('after', 'activities[-1]', [{
-                    _type: "reference",
-                    _ref: activityResponse._id
-                }]).commit({autoGenerateArrayKeys: true});
-                khassida.totalTimes = khassida.currentUserTotalTimes;
+        async submitTimesUpdate(){
+            this.loading = true;
+            for (let khassida of this.khassidas){
+                await client.patch(khassida._id).inc({total: +khassida.currentUserTotalTimes}).commit();
+                khassida.total += +khassida.currentUserTotalTimes;
+                khassida.currentUserTotalTimes = 0;
             }
-            this.showSubmission = true;
+        this.loading = false;
         }
     } 
 }
 </script>
+
+<style>
+.lds-dual-ring {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.save-changes {
+    transition: all 0.6s ease-in-out;
+}
+
+</style>
