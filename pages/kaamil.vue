@@ -75,7 +75,10 @@
                 >
                 <th scope="row">{{index + 1}}</th>
                 <td>{{user.username}}</td>
-                <td>{{user.current_book.title}}</td>
+                <td v-if="user.current_book">{{user.current_book.title}}</td>
+                <td v-else>
+                    <em class="pi pi-times"></em>
+                </td>
                 <td v-if="user.second_book">{{user.second_book.title}}</td>
                 <td v-else>
                     <em class="pi pi-times"></em>

@@ -66,7 +66,7 @@ export default {
     data(){
         return {
             khassidas: null,
-            loadingChanges: false
+            loading: false
         }
     },
     async fetch(){
